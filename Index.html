@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Swift Cargo | Request Delivery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Inter', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(145deg, #f0f7ff 0%, #e9f0fa 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main App Container */
+        .app-container {
+            max-width: 550px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .brand-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .brand-header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0A2540 0%, #1e4a6e 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-header span {
+            color: #FF7A00;
+            background: none;
+            -webkit-background-clip: unset;
+            background-clip: unset;
+        }
+
+        .slogan {
+            color: #4a627a;
+            font-weight: 500;
+            margin-top: 6px;
+            font-size: 0.9rem;
+        }
+
+        /* Card Style */
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(0px);
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.02);
+            padding: 28px 24px;
+            margin-bottom: 18px;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 122, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: #0A2540;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-sub {
+            color: #5e6f8d;
+            font-size: 0.85rem;
+            margin-bottom: 24px;
+            border-left: 3px solid #FF7A00;
+            padding-left: 12px;
+        }
+
+        /* Form Group */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1f2f3e;
+            margin-bottom: 8px;
+        }
+
+        label i {
+            color: #FF7A00;
+            width: 20px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 24px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #FF7A00;
+            box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.15);
+        }
+
+        /* Double button row */
+        .double-btn {
+            display: flex;
+            gap: 14px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 18px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.1s ease, background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #FF7A00;
+            color: white;
+            box-shadow: 0 6px 14px rgba(255, 122, 0, 0.25);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+            background: #e56a00;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1.5px solid #0A2540;
+            color: #0A2540;
+        }
+
+        .btn-outline:active {
+            transform: scale(0.97);
+            background: #f5f9ff;
+        }
+
+        /* Status Messages */
+        .status-card {
+            background: #f8fafc;
+            border-radius: 28px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-left: 5px solid #FF7A00;
+        }
+
+        .status-icon {
+            font-size: 1.8rem;
+        }
+
+        .status-text {
+            flex: 1;
+        }
+
+        .status-text p {
+            color: #2c3e4e;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            background: #eef2ff;
+            padding: 4px 12px;
+            border-radius: 40px;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Order summary */
+        .order-summary {
+            background: #fef9e6;
+            border-radius: 24px;
+            padding: 18px;
+            margin-top: 16px;
+            font-size: 0.85rem;
+            border: 1px solid #ffdeae;
+        }
+
+        .delivery-badge {
+            background: #0A2540;
+            color: white;
+            border-radius: 30px;
+            padding: 6px 14px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        hr {
+            margin: 16px 0;
+            border: none;
+            height: 1px;
+            background: #eef2f5;
+        }
+
+        /* Sticky bottom */
+        .safe-note {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #7c8ba0;
+            margin-top: 20px;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            transform: none;
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 16px;
+            }
+            .card {
+                padding: 22px 18px;
+            }
+            .btn {
+                padding: 12px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <!-- Header -->
+    <div class="brand-header">
+        <h1>Swift<span>Cargo</span></h1>
+        <div class="slogan">⚡ Instant delivery • Kampala & beyond</div>
+    </div>
+
+    <!-- Main Request Card -->
+    <div class="card" id="requestCard">
+        <div class="card-title">
+            <span>📦</span> Request Delivery
+        </div>
+        <div class="card-sub">
+            Fill details below — our team will confirm on WhatsApp
+        </div>
+
+        <form id="deliveryForm">
+            <div class="form-group">
+                <label><i class="emoji-icon">👤</i> Full name</label>
+                <input type="text" id="fullName" placeholder="e.g. James Muwanga" required autocomplete="name">
+            </div>
+            <div class="form-group">
+                <label><i class="emoji-icon">📞</i> Phone number (WhatsApp)</label>
+                <input type="tel" id="phoneNumber" placeholder="0747532027" value="0747532027" required>
+                <div style="font-size: 0.7rem; margin-top: 5px; color:#FF7A00;">⬅️ We'll reach you here</div>
+            </div>
+            <div class="form-group">
+                <label><i class="emoji-icon">📍</i> Pickup location</label>
+                <input type="text" id="pickupLocation" placeholder="Street, landmark, Kampala" required>
+            </div>
+            <div class="form-group">
+                <label><i class="emoji-icon">🏁</i> Drop-off location</label>
+                <input type="text" id="dropoffLocation" placeholder="Recipient address" required>
+            </div>
+            <div class="form-group">
+                <label><i class="emoji-icon">📦</i> Package size</label>
+                <select id="packageSize">
+                    <option value="Small (envelope/small box)">Small (envelope/small box)</option>
+                    <option value="Medium (carton up to 10kg)">Medium (carton up to 10kg)</option>
+                    <option value="Large (bulky / >10kg)">Large (bulky / >10kg)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label><i class="emoji-icon">✏️</i> Extra notes (optional)</label>
+                <textarea id="notes" rows="2" placeholder="Fragile, urgent, specific instructions..."></textarea>
+            </div>
+
+            <div class="double-btn">
+                <button type="submit" class="btn btn-primary" id="sendRequestBtn">
+                    <span>🚀</span> Request Delivery
+                </button>
+                <button type="button" class="btn btn-outline" id="whatsappDirectBtn">
+                    <span>💬</span> Chat on WhatsApp
+                </button>
+            </div>
+        </form>
+
+        <!-- Hidden preview area (order summary appears after request) -->
+        <div id="orderPreview" class="order-summary hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong>📋 Current request</strong>
+                <span class="delivery-badge"><span>⏳</span> Pending confirmation</span>
+            </div>
+            <div id="orderDetailsPreview" style="margin-top: 12px; font-size: 0.85rem;"></div>
+            <hr>
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button id="confirmDeliveryBtn" class="btn btn-primary" style="background:#0A2540; padding: 10px 20px; font-size: 0.8rem;">✅ Confirm delivery received</button>
+            </div>
+            <p style="font-size: 0.7rem; margin-top: 12px; color: #4b5563;">✔️ After delivery, tap confirm & we'll notify you.</p>
+        </div>
+    </div>
+
+    <!-- Status / Timeline Card (Dynamic) -->
+    <div class="card" id="statusCard">
+        <div class="status-card">
+            <div class="status-icon">🟢</div>
+            <div class="status-text">
+                <strong>Ready for requests</strong>
+                <p>Send delivery info → we respond on WhatsApp within minutes.</p>
+                <div class="status-badge" id="statusBadge">⚡ Awaiting request</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delivery confirmation success message placeholder -->
+    <div id="confirmationToast" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0A2540; color: white; padding: 12px 24px; border-radius: 60px; font-weight: 500; z-index: 1000; opacity: 0; transition: opacity 0.2s; pointer-events: none; font-size: 0.9rem; box-shadow: 0 10px 20px rgba(0,0,0,0.1);"></div>
+
+    <div class="safe-note">
+        🔐 Your request is sent directly to Swift Cargo's WhatsApp (0747532027). We'll reply instantly.
+    </div>
+</div>
+
+<script>
+    // ----------------------------------------------
+    // SIMPLE WEB APP: Delivery request -> WhatsApp 0747532027
+    // Features: request, order summary, delivery confirmation
+    // ----------------------------------------------
+    
+    // Target WhatsApp number (Uganda format without '+' or with '+256' but we standardize)
+    const BUSINESS_WA_NUMBER = "256747532027";   // 0747532027 -> international format 256747532027
+    const DISPLAY_NUMBER = "0747532027";
+    
+    // Local storage to track active request (so confirmation works after page refresh)
+    let currentRequestData = null;
+
+    // DOM elements
+    const form = document.getElementById('deliveryForm');
+    const sendBtn = document.getElementById('sendRequestBtn');
+    const orderPreviewDiv = document.getElementById('orderPreview');
+    const orderDetailsSpan = document.getElementById('orderDetailsPreview');
+    const confirmBtn = document.getElementById('confirmDeliveryBtn');
+    const statusBadge = document.getElementById('statusBadge');
+    const statusText = document.querySelector('#statusCard .status-text p');
+    const statusIcon = document.querySelector('#statusCard .status-icon');
+    const whatsappDirectBtn = document.getElementById('whatsappDirectBtn');
+    const toast = document.getElementById('confirmationToast');
+
+    // Helper to show toast message
+    function showToast(message, isError = false) {
+        toast.style.backgroundColor = isError ? '#d32f2f' : '#0A2540';
+        toast.innerText = message;
+        toast.style.opacity = '1';
+        setTimeout(() => {
+            toast.style.opacity = '0';
+        }, 3000);
+    }
+
+    // Build readable summary from form data
+    function getFormData() {
+        const fullName = document.getElementById('fullName').value.trim();
+        const phone = document.getElementById('phoneNumber').value.trim();
+        const pickup = document.getElementById('pickupLocation').value.trim();
+        const dropoff = document.getElementById('dropoffLocation').value.trim();
+        const packageSize = document.getElementById('packageSize').value;
+        const notes = document.getElementById('notes').value.trim();
+        return { fullName, phone, pickup, dropoff, packageSize, notes };
+    }
+
+    function validateFormData(data) {
+        if (!data.fullName || !data.phone || !data.pickup || !data.dropoff) {
+            showToast("❌ Please fill all required fields (Name, Phone, Pickup & Drop-off)", true);
+            return false;
+        }
+        // simple phone validation (at least 9 digits)
+        const phoneDigits = data.phone.replace(/\D/g, '');
+        if (phoneDigits.length < 9) {
+            showToast("📞 Please enter a valid phone number (e.g., 0747532027)", true);
+            return false;
+        }
+        return true;
+    }
+
+    // Generate WhatsApp message for delivery request
+    function generateWhatsAppMessage(data, requestType = 'new') {
+        if (requestType === 'new') {
+            return `🚚 *NEW DELIVERY REQUEST* 🚚%0A%0A` +
+                   `👤 *Name:* ${data.fullName}%0A` +
+                   `📞 *WhatsApp:* ${data.phone}%0A` +
+                   `📍 *Pickup:* ${data.pickup}%0A` +
+                   `🏁 *Drop-off:* ${data.dropoff}%0A` +
+                   `📦 *Package:* ${data.packageSize}%0A` +
+                   `📝 *Notes:* ${data.notes || '—'}%0A%0A` +
+                   `⏰ *Requested at:* ${new Date().toLocaleString()}%0A` +
+                   `🟡 *Status:* Awaiting confirmation & dispatch.`;
+        } else if (requestType === 'delivery_confirmation') {
+            return `✅ *DELIVERY CONFIRMED* ✅%0A%0A` +
+                   `Customer: ${data.fullName}%0A` +
+                   `Phone: ${data.phone}%0A` +
+                   `Pickup: ${data.pickup} → Dropoff: ${data.dropoff}%0A` +
+                   `Package: ${data.packageSize}%0A` +
+                   `📌 *Delivery completed successfully* at ${new Date().toLocaleString()}.%0A` +
+                   `Thank you for using Swift Cargo! 🎉`;
+        }
+        return "";
+    }
+
+    // Send request to WhatsApp (open wa.me link)
+    function sendToWhatsApp(message) {
+        const encodedMsg = encodeURIComponent(message);
+        const waLink = `https://wa.me/${BUSINESS_WA_NUMBER}?text=${encodedMsg}`;
+        window.open(waLink, '_blank');
+    }
+
+    // Update UI after a request is placed (store current order, show summary)
+    function updateUIAfterRequest(data) {
+        // Store current request in memory and localStorage for persistence
+        currentRequestData = { ...data, requestTime: new Date().toISOString() };
+        localStorage.setItem('swift_active_request', JSON.stringify(currentRequestData));
+
+        // Show order preview card
+        orderPreviewDiv.classList.remove('hidden');
+        const summaryHtml = `
+            <div style="display:flex; justify-content:space-between;"><span>👤 ${data.fullName}</span> <span>📞 ${data.phone}</span></div>
+            <div>📍 ${data.pickup} → 🏁 ${data.dropoff}</div>
+            <div>📦 ${data.packageSize}</div>
+            ${data.notes ? `<div>📌 Notes: ${data.notes}</div>` : ''}
+            <div style="font-size:0.7rem; margin-top:6px;">🕒 Request sent: ${new Date().toLocaleTimeString()}</div>
+        `;
+        orderDetailsSpan.innerHTML = summaryHtml;
+        
+        // Change status badge to 'request sent'
+        statusBadge.innerHTML = "📨 Request sent — awaiting driver";
+        statusBadge.style.background = "#FFE4C4";
+        statusText.innerHTML = "We received your request! Driver will be assigned. You can chat with us on WhatsApp for live updates.";
+        statusIcon.innerHTML = "📦";
+        
+        // Enable confirmation button (makes sense only after request exists)
+        if (confirmBtn) confirmBtn.disabled = false;
+        showToast("✅ Request sent! Our team will contact you on WhatsApp shortly.", false);
+    }
+
+    // Clear request after delivery confirmation
+    function confirmDelivery() {
+        if (!currentRequestData) {
+            // try to load from localStorage
+            const stored = localStorage.getItem('swift_active_request');
+            if (stored) {
+                try {
+                    currentRequestData = JSON.parse(stored);
+                } catch(e) {}
+            }
+            if (!currentRequestData) {
+                showToast("No active delivery request to confirm. Please place a request first.", true);
+                return;
+            }
+        }
+        
+        // Prepare confirmation message and send to business WhatsApp
+        const confirmMsg = generateWhatsAppMessage(currentRequestData, 'delivery_confirmation');
+        // Open WhatsApp with delivery confirmation notice
+        sendToWhatsApp(confirmMsg);
+        
+        // Also optionally send a thank you message to customer? but primary is business gets confirmation.
+        // Update UI to reflect completion
+        statusBadge.innerHTML = "✅ Delivery completed";
+        statusBadge.style.background = "#D4EDDA";
+        statusText.innerHTML = "Delivery confirmed! Thank you for choosing Swift Cargo. Rate us anytime!";
+        statusIcon.innerHTML = "🎉";
+        
+        // Hide order preview or mark as completed
+        const summaryDiv = orderDetailsSpan;
+        if (summaryDiv) {
+            summaryDiv.innerHTML += `<div style="margin-top:12px; background:#e0f2e9; padding:8px; border-radius:20px; color:#166534;">✔️ Delivery confirmed at ${new Date().toLocaleTimeString()}</div>`;
+        }
+        if (confirmBtn) confirmBtn.disabled = true;
+        confirmBtn.style.opacity = "0.6";
+        
+        // Show toast & clear local storage after confirmation? keep as history but we will not auto clear.
+        // but update local storage to mark as completed
+        if (currentRequestData) {
+            currentRequestData.completed = true;
+            localStorage.setItem('swift_active_request', JSON.stringify(currentRequestData));
+        }
+        showToast("🎉 Delivery confirmed! Notification sent to Swift Cargo. Thank you!", false);
+        
+        // optional: after 3 seconds reset order preview? not needed for UX, but we can keep status.
+    }
+    
+    // Main submit: create new delivery request
+    function onSubmitRequest(event) {
+        event.preventDefault();
+        const data = getFormData();
+        if (!validateFormData(data)) return;
+        
+        // Build message for WhatsApp (business receives full order)
+        const waMessage = generateWhatsAppMessage(data, 'new');
+        
+        // Send to WhatsApp (opens chat window)
+        sendToWhatsApp(waMessage);
+        
+        // Save data & update UI
+        updateUIAfterRequest(data);
+        
+        // Optionally reset only the notes field? keep fields for reference but we don't clear main form to avoid confusion
+        // but we can also leave data visible, user might modify - but best keep summary separate.
+        // Keep form filled but not mandatory to reset.
+        // Highlight that request is active.
+    }
+    
+    // Direct WhatsApp chat button (without form validation)
+    function directWhatsAppChat() {
+        const name = document.getElementById('fullName').value.trim() || "Customer";
+        const phone = document.getElementById('phoneNumber').value.trim() || "0747532027";
+        const quickMsg = `Hello Swift Cargo! I'm ${name} (${phone}). I need delivery assistance. 🚚`;
+        const encoded = encodeURIComponent(quickMsg);
+        window.open(`https://wa.me/${BUSINESS_WA_NUMBER}?text=${encoded}`, '_blank');
+    }
+    
+    // Load existing active request from localStorage on page load (persistence)
+    function loadStoredRequest() {
+        const stored = localStorage.getItem('swift_active_request');
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                if (parsed && !parsed.completed) {
+                    // There's an active non-completed request
+                    currentRequestData = parsed;
+                    // Fill form fields with stored data for continuity
+                    if (parsed.fullName) document.getElementById('fullName').value = parsed.fullName;
+                    if (parsed.phone) document.getElementById('phoneNumber').value = parsed.phone;
+                    if (parsed.pickup) document.getElementById('pickupLocation').value = parsed.pickup;
+                    if (parsed.dropoff) document.getElementById('dropoffLocation').value = parsed.dropoff;
+                    if (parsed.packageSize) {
+                        const select = document.getElementById('packageSize');
+                        for(let i=0; i<select.options.length; i++) {
+                            if(select.options[i].value === parsed.packageSize) {
+                                select.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                    if (parsed.notes) document.getElementById('notes').value = parsed.notes;
+                    
+                    // Show preview and update UI accordingly
+                    orderPreviewDiv.classList.remove('hidden');
+                    const summaryHtml = `
+                        <div style="display:flex; justify-content:space-between;"><span>👤 ${parsed.fullName}</span> <span>📞 ${parsed.phone}</span></div>
+                        <div>📍 ${parsed.pickup} → 🏁 ${parsed.dropoff}</div>
+                        <div>📦 ${parsed.packageSize}</div>
+                        ${parsed.notes ? `<div>📌 Notes: ${parsed.notes}</div>` : ''}
+                        <div style="font-size:0.7rem; margin-top:6px;">🕒 Pending confirmation since ${new Date(parsed.requestTime).toLocaleTimeString() || "earlier"}</div>
+                    `;
+                    orderDetailsSpan.innerHTML = summaryHtml;
+                    statusBadge.innerHTML = "📨 Awaiting delivery confirmation";
+                    statusBadge.style.background = "#FFF1E0";
+                    statusText.innerHTML = "Your request is active. Tap 'Confirm delivery received' when package arrives.";
+                    statusIcon.innerHTML = "⏳";
+                    if (confirmBtn) confirmBtn.disabled = false;
+                } else if (parsed && parsed.completed) {
+                    // show completed state
+                    statusBadge.innerHTML = "✅ Past delivery completed";
+                    statusBadge.style.background = "#D4EDDA";
+                    statusText.innerHTML = "Your last delivery was confirmed. Place a new request!";
+                    statusIcon.innerHTML = "📦";
+                    orderPreviewDiv.classList.add('hidden');
+                    if (confirmBtn) confirmBtn.disabled = true;
+                }
+            } catch(e) {}
+        }
+    }
+    
+    // Also handle confirm button
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', confirmDelivery);
+    }
+    if (whatsappDirectBtn) {
+        whatsappDirectBtn.addEventListener('click', directWhatsAppChat);
+    }
+    form.addEventListener('submit', onSubmitRequest);
+    
+    // Additional: after confirmation, we might want to reset the ability to place new request but not necessary
+    // Reset if user wants to start fresh? They can fill again and submit new request (will override current)
+    // When new request submitted, it will replace old active request
+    // Override submit to update localstorage and override previous.
+    // ensure updateUIAfterRequest overwrites currentRequestData
+    
+    // attach a manual reset for new request: modify onSubmitRequest already overwrites.
+    // also if confirm Delivery marks completed, but new request will create fresh one.
+    
+    // Add a small reset for "new request" manually? optional, but no need. User can fill and request again.
+    
+    // Persist on page load
+    loadStoredRequest();
+    
+    // If no stored request, ensure confirm button is disabled
+    if (!currentRequestData || currentRequestData.completed) {
+        if (confirmBtn) confirmBtn.disabled = true;
+    } else {
+        if (confirmBtn && currentRequestData && !currentRequestData.completed) confirmBtn.disabled = false;
+    }
+    
+    // Additional: show helpful if number is predefined
+    console.log("Swift Cargo App Ready — All requests go to 0747532027");
+</script>
+</body>
+</html>
